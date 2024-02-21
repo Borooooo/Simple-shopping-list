@@ -23,7 +23,6 @@
     <button onclick="filterList('all')">show all</button>
     <button onclick="filterList('unpurchased')">unpurchased products</button>
     <button onclick="filterList('purchased')">purchased products</button>
-    <button onclick="saveList()">save list</button>
   </div>
 
   <script>
