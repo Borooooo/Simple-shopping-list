@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>shoppingi list</title>
+</head>
+<body>
+
+  <h1>Shopping List</h1>
+
+  <div>
+    <label for="productName">Product name:</label>
+    <input type="text" id="productName">
+    <label for="quantity">quantity:</label>
+    <input type="number" id="quantity" min="1" value="1">
+    <button onclick="addProduct()">Add a product</button>
+  </div>
+
+  <div>
+    <h2>Shopping List</h2>
+    <ul id="shoppingList"></ul>
+    <button onclick="filterList('all')">show all</button>
+    <button onclick="filterList('unpurchased')">unpurchased products</button>
+    <button onclick="filterList('purchased')">purchased products</button>
+    <button onclick="saveList()">save list</button>
+  </div>
+
+  <script>
+     
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadList();
+    });
+
+    let shoppingList = [];
+
+    function addProduct() {
+      const productName = document.getElementById('productName').value;
+      const quantity = document.getElementById('quantity').value;
+
+      if (productName.trim() !== '') {
+        const product = {
+          name: productName,
+          quantity: parseInt(quantity),
+          purchased: false
+        };
+
+        shoppingList.push(product);
+        displayList();
+        resetInputs();
+      }
+    }
+
+    function displayList() {
+      const shoppingListElement = document.getElementById('shoppingList');
+      shoppingListElement.innerHTML = '';
+
+      shoppingList.forEach(product => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${product.name} - ${product.quantity} pcs.`;
+        listItem.setAttribute('data-product-name', product.name);  
+        if (product.purchased) {
+          listItem.style.textDecoration = 'line-through';
+        }
+
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.onclick = () => editProduct(product);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.onclick = () => deleteProduct(product);
+
+        const toggleButton = document.createElement('button');
+        toggleButton.textContent = 'Purchased';
+        toggleButton.onclick = () => togglePurchasedStatus(product);
+
+        listItem.appendChild(editButton);
+        listItem.appendChild(deleteButton);
+        listItem.appendChild(toggleButton);
+
+        shoppingListElement.appendChild(listItem);
+      });
+    }
+
+    function editProduct(product) {
+      const newProductName = prompt('Enter new product name:', product.name);
+      const newQuantity = prompt('Enter new quantity:', product.quantity);
+
+      if (newProductName !== null && newQuantity !== null) {
+        product.name = newProductName.trim() !== '' ? newProductName : product.name;
+        product.quantity = parseInt(newQuantity) || product.quantity;
+
+        displayList();
+      }
+    }
+
+    function deleteProduct(product) {
+      const confirmDelete = confirm(`Are you sure you want to delete the product: ${product.name}?`);
+
+      if (confirmDelete) {
+        shoppingList = shoppingList.filter(item => item !== product);
+        displayList();
+      }
+    }
+
+    function togglePurchasedStatus(product) {
+      product.purchased = !product.purchased;
+      displayList();
+    }
+
+    function filterList(filterType) {
+      const shoppingListElement = document.getElementById('shoppingList');
+
+      shoppingList.forEach(product => {
+        const listItem = shoppingListElement.querySelector(`[data-product-name="${product.name}"]`);
+
+        if (filterType === 'all') {
+          listItem.style.display = 'block';
+        } else if (filterType === 'unpurchased' && !product.purchased) {
+          listItem.style.display = 'block';
+        } else if (filterType === 'purchased' && product.purchased) {
+          listItem.style.display = 'block';
+        } else {
+          listItem.style.display = 'none';
+        }
+      });
+    }
+
+    function resetInputs() {
+      document.getElementById('productName').value = '';
+      document.getElementById('quantity').value = 1;
+    }
+
+    function saveList() {
+      localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+    }
+
+    function loadList() {
+      const storedList = localStorage.getItem('shoppingList');
+
+      if (storedList) {
+        shoppingList = JSON.parse(storedList);
+        displayList();
+      }
+    }
+  </script>
+</body>
+</html>
