@@ -18,7 +18,7 @@
   </div>
 
   <div>
-    <h2>Shopping List</h2>
+    <h2> List</h2>
     <ul id="shoppingList"></ul>
     <button onclick="filterList('all')">show all</button>
     <button onclick="filterList('unpurchased')">unpurchased products</button>
